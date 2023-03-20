@@ -1,14 +1,14 @@
 
 class Organism {
     private:
+
     public:
-        // 32-bit number - encoded using Gray's code
+        // binary number written in memory
         unsigned int DNA;
 
-        int getValue() {
-            // output number that is encoded by DNA 
-
-            int b = 0;
+        // number encoded by DNA
+        unsigned int getValue() {
+            unsigned int b = 0;
 
             int bit;
             for (int j = 31; j >= 0; j--) {
