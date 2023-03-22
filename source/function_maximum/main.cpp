@@ -9,6 +9,7 @@ double f(double x) {
 
 // global parameters - maybe put into a separate file?
 const int POP_SIZE = 100;
+const int GENERATIONS = 1000;
 const double A = -10.0;     // interval start
 const double B = 10.0;      // interval end 
 const int N = 32;           // length of chromosome
