@@ -2,26 +2,28 @@
 #include "organism.h"
 using namespace std;
 
-// target function, defined on [A, B]
-double f(double x) {
-    return (2*sin(x)*sin(x)) / x;
-}
 
 // global parameters - maybe put into a separate file?
 const int POP_SIZE = 100;
-const int GENRATIONS = 1000;
+const int GENRATIONS = 20;
 const double A = -10.0;     // interval start
 const double B = 10.0;      // interval end 
 const double CONST = 1.0;   // constant used so that f(x) is not negative 
 const int N = 32;           // length of chromosome
 vector<Organism> POPULATION, NEW_POPULATION;
 
+// target function, defined on [A, B]
+double f(double x) {
+    return (2*sin(x)*sin(x)) / x;
+}
+
 // fucntions
 double getEncodedNumber(Organism &o)
 {
     /* returns real number that is encoded by some chromosome */
 
-    double x = (o.getValue()) / ((1 << (N - 1)) - 1.0);
+    
+    double x = (o.getValue()) / (UINT_MAX - 1.0);
     return A + x*(B - A);
 }
 
@@ -93,9 +95,28 @@ Organism selectParents() {
     return o;
 }
 
-int mateParents(Organism &p1, Organism &p2) {
+Organism mateParents(Organism &p1, Organism &p2) {
     /* performs mating algorithm and returns a child of given parents */
-    return -1;
+
+    // uniform crossover - each bit has 0.5 chance of being
+    // carried over to child
+
+    Organism child;
+    child.DNA = 0;
+    for (int i = N - 1; i >= 0; i--) {
+        if ((p1.DNA & (1 << i)) == (p2.DNA & (1 << i))) {
+            child.DNA |= (p1.DNA & (1 << i));
+        }
+        else {
+            if (rand() % 2 == 1) child.DNA |= (1 << i);
+        }
+    }
+
+    return child;
+}
+
+void mutate() {
+    /* mutate an organism */
 }
 
 void createNewPopulation() {
@@ -115,11 +136,14 @@ void createNewPopulation() {
         }
         while(p2 == p1); 
 
-        diff.insert(p1.DNA);
-        diff.insert(p2.DNA);
+        ch1 = mateParents(p1, p2);
+        ch2 = mateParents(p1, p2);
+
+        NEW_POPULATION.push_back(ch1);
+        NEW_POPULATION.push_back(ch2);
     }
 
-    cout << "Number of different selected parents is " << diff.size() << "\n";
+    POPULATION = NEW_POPULATION;
 
     return;
 }
@@ -129,11 +153,18 @@ int main() {
 
     initializePopulation(); 
 
-    createNewPopulation();
-
-   /* for (int i = 0; i < GENRATIONS; i++) {
+    for (int i = 0; i < GENRATIONS; i++) {
         createNewPopulation();
-    } */
+    } 
+
+    Organism best = POPULATION[0];
+    for (Organism &o : POPULATION) {
+        if (fitness(o) > fitness(best)) {
+            best = o;
+        }
+    }
+
+    cout << "Najbolji organizam: " << getEncodedNumber(best) << ", " << best.getValue() << "\n";
 
     return 0;
 }
