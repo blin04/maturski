@@ -6,6 +6,10 @@ class Organism {
         // binary number written in memory
         unsigned int DNA;
 
+        bool operator == (Organism o) {
+            return DNA == o.DNA;
+        }
+
         // number encoded by DNA
         unsigned int getValue() {
             unsigned int b = 0;
