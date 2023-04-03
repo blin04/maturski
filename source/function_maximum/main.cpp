@@ -5,7 +5,7 @@ using namespace std;
 
 // global parameters - maybe put into a separate file?
 const int POP_SIZE = 100;
-const int GENRATIONS = 20;
+const int GENRATIONS = 10;
 const double A = -10.0;     // interval start
 const double B = 10.0;      // interval end 
 const double CONST = 1.0;   // constant used so that f(x) is not negative 
@@ -18,14 +18,6 @@ double f(double x) {
 }
 
 // fucntions
-double getEncodedNumber(Organism &o)
-{
-    /* returns real number that is encoded by some chromosome */
-
-    
-    double x = (o.getValue()) / (UINT_MAX - 1.0);
-    return A + x*(B - A);
-}
 
 int createRandomDNA() {
     /* returns random DNA, used for initializing population */
@@ -58,7 +50,7 @@ double fitness(Organism &o) {
     /* calculates fitness function of an organism 
        in other words, how good an organism is */
 
-    double x = getEncodedNumber(o); 
+    double x = o.getEncodedNumber(A, B); 
     return f(x) + CONST;
 }
 
@@ -154,6 +146,7 @@ int main() {
     initializePopulation(); 
 
     for (int i = 0; i < GENRATIONS; i++) {
+        cout << i + 1 << ". generation\n";
         createNewPopulation();
     } 
 
@@ -164,7 +157,7 @@ int main() {
         }
     }
 
-    cout << "Najbolji organizam: " << getEncodedNumber(best) << ", " << best.getValue() << "\n";
+    cout << "Found best solution: " << best.getEncodedNumber(A, B) << "\n";
 
     return 0;
 }
