@@ -5,12 +5,8 @@ using namespace std;
 
 // global parameters - maybe put into a separate file?
 const int POP_SIZE = 100;
-<<<<<<< HEAD
-const int GENERATIONS = 10;
-=======
-const int GENRATIONS = 10;
->>>>>>> simple
-const double A = -10.0;     // interval start
+const int GENERATIONS = 15;
+const double A = 0.0;     // interval start
 const double B = 10.0;      // interval end 
 const double CONST = 1.0;   // constant used so that f(x) is not negative 
 const int N = 32;           // length of chromosome
@@ -18,7 +14,7 @@ vector<Organism> POPULATION, NEW_POPULATION;
 
 // target function, defined on [A, B]
 double f(double x) {
-    return (2*sin(x)*sin(x)) / x;
+    return (pow(x, sin(x)));
 }
 
 // fucntions
@@ -111,8 +107,19 @@ Organism mateParents(Organism &p1, Organism &p2) {
     return child;
 }
 
-void mutate() {
-    /* mutate an organism */
+void mutate(Organism &o) {
+    /* mutate an organism
+    every bit has chance of 0.5 to mutate */
+
+    // randomly generate mask of 32 bits
+    unsigned int mask = 0;
+    for (int i = 0; i < 32; i++) {
+        if (rand() % 2 == 1) mask |= (1 << i);
+    }
+
+    // mask[i] = 1 - i-th bit survives
+    // mask[i] = 0 - i-th bit mutates
+    o.DNA ^= mask;    
 }
 
 void createNewPopulation() {
@@ -149,7 +156,7 @@ int main() {
 
     initializePopulation(); 
 
-    for (int i = 0; i < GENRATIONS; i++) {
+    for (int i = 0; i < GENERATIONS; i++) {
         cout << i + 1 << ". generation\n";
         createNewPopulation();
     } 
