@@ -5,14 +5,16 @@ using namespace std;
 
 // global parameters - maybe put into a separate file?
 const int POP_SIZE = 100;
-const int GENERATIONS = 15;
-const double A = 0.0;     // interval start
-const double B = 10.0;      // interval end 
-const double CONST = 1.0;   // constant used so that f(x) is not negative 
+const int GENERATIONS = 50;
+const double A = 0.0;       // interval start
+const double B = 100.0;     // interval end 
+double CONST = 0.0;         // constant used so that f(x) is not negative 
 const int N = 32;           // length of chromosome
+const int PM = 2;           // chance of mutation (in percentage)
 vector<Organism> POPULATION, NEW_POPULATION;
 
 // target function, defined on [A, B]
+
 double f(double x) {
     return (pow(x, sin(x)));
 }
@@ -33,6 +35,27 @@ int createRandomDNA() {
     
     return DNA;
 }
+
+void setConst() {
+    /* sets value of CONST variable, which is used 
+    so that fitness functions is positive for all organisms */
+
+    for (Organism &o : POPULATION) {
+        if (f(o.getEncodedNumber(A, B)) < 0)
+            CONST = max(CONST, -f(o.getEncodedNumber(A, B)));
+    } 
+}
+
+int randomMask() {
+    /* generates random binary mask */
+    int mask = 0;
+
+    for (int i = 0; i < 32; i++) 
+        if (rand() % 2) mask |= (1 << i);
+    
+    return mask;
+}
+
 
 void initializePopulation() {
     /* creates initial population of
@@ -87,11 +110,9 @@ Organism selectParents() {
     return o;
 }
 
-Organism mateParents(Organism &p1, Organism &p2) {
-    /* performs mating algorithm and returns a child of given parents */
-
-    // uniform crossover - each bit has 0.5 chance of being
-    // carried over to child
+Organism mateParents(Organism &p1, Organism &p2, double p = 0.5) {
+    /* performs p-uniform mating algorithm 
+    and returns a child of given parents */
 
     Organism child;
     child.DNA = 0;
@@ -100,26 +121,29 @@ Organism mateParents(Organism &p1, Organism &p2) {
             child.DNA |= (p1.DNA & (1 << i));
         }
         else {
-            if (rand() % 2 == 1) child.DNA |= (1 << i);
+            if (rand() % 10 < (p * 10)) child.DNA |= (1 << i);
         }
     }
 
     return child;
 }
 
-void mutate(Organism &o) {
-    /* mutate an organism
-    every bit has chance of 0.5 to mutate */
+void mutate() {
+    /* mutate pm percentage of population */
 
-    // randomly generate mask of 32 bits
-    unsigned int mask = 0;
-    for (int i = 0; i < 32; i++) {
-        if (rand() % 2 == 1) mask |= (1 << i);
+    for (int i = 0; i < POP_SIZE; i++) {
+        // organism has probability of PM/100 
+        // to be chosen
+
+        if ((rand() % 100) < PM) {
+            // mutation is performed as follows:
+            //  * mask[i] == 1  ->  this bit stays as it was
+            //  * mask[i] == 0  ->  this bit changes
+
+            POPULATION[i].DNA ^= randomMask();
+        }
     }
 
-    // mask[i] = 1 - i-th bit survives
-    // mask[i] = 0 - i-th bit mutates
-    o.DNA ^= mask;    
 }
 
 void createNewPopulation() {
@@ -141,6 +165,9 @@ void createNewPopulation() {
 
         ch1 = mateParents(p1, p2);
         ch2 = mateParents(p1, p2);
+
+        mutate();
+        mutate();
 
         NEW_POPULATION.push_back(ch1);
         NEW_POPULATION.push_back(ch2);
