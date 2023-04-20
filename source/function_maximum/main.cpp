@@ -5,7 +5,7 @@ using namespace std;
 
 // global parameters - maybe put into a separate file?
 const int POP_SIZE = 100;
-const int GENERATIONS = 50;
+const int GENERATIONS = 20;
 const double A = 0.0;       // interval start
 const double B = 100.0;     // interval end 
 double CONST = 0.0;         // constant used so that f(x) is not negative 
@@ -112,16 +112,26 @@ Organism selectParents() {
 
 Organism mateParents(Organism &p1, Organism &p2, double p = 0.5) {
     /* performs p-uniform mating algorithm 
-    and returns a child of given parents */
+    and returns a child of given parents 
+    (p is expected to be between 0 and 1) */
 
     Organism child;
     child.DNA = 0;
     for (int i = N - 1; i >= 0; i--) {
         if ((p1.DNA & (1 << i)) == (p2.DNA & (1 << i))) {
+            // values of i-th bit are equal
             child.DNA |= (p1.DNA & (1 << i));
         }
         else {
-            if (rand() % 10 < (p * 10)) child.DNA |= (1 << i);
+            // values of i-th bit are different
+            if (rand() % 10 < (p * 10)) {
+                // choosing p1's bit
+                child.DNA |= (p1.DNA & (1 << i));
+            } 
+            else {
+                // choosing p2's bit
+                child.DNA |= (p2.DNA & (1 << i));
+            }
         }
     }
 
@@ -132,8 +142,7 @@ void mutate() {
     /* mutate pm percentage of population */
 
     for (int i = 0; i < POP_SIZE; i++) {
-        // organism has probability of PM/100 
-        // to be chosen
+        // organism has probability of PM/100 to be chosen
 
         if ((rand() % 100) < PM) {
             // mutation is performed as follows:
@@ -149,8 +158,6 @@ void mutate() {
 void createNewPopulation() {
     /* creates new generation by mating parents
      from current population */
-
-    set<int> diff;
 
     Organism p1, p2;    // parents
     Organism ch1, ch2;  // children
