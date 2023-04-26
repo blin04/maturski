@@ -8,8 +8,8 @@ const int POP_SIZE = 100;
 const int GENERATIONS = 20;
 const double A = 0.0;       // interval start
 const double B = 100.0;     // interval end 
-double CONST = 0.0;         // constant used so that f(x) is not negative 
 const int N = 32;           // length of chromosome
+const int M = 15;            // how many chromosomes are eliminated
 const int PM = 2;           // chance of mutation (in percentage)
 vector<Organism> POPULATION, NEW_POPULATION;
 
@@ -36,16 +36,6 @@ int createRandomDNA() {
     return DNA;
 }
 
-void setConst() {
-    /* sets value of CONST variable, which is used 
-    so that fitness functions is positive for all organisms */
-
-    for (Organism &o : POPULATION) {
-        if (f(o.getEncodedNumber(A, B)) < 0)
-            CONST = max(CONST, -f(o.getEncodedNumber(A, B)));
-    } 
-}
-
 int randomMask() {
     /* generates random binary mask */
     int mask = 0;
@@ -55,7 +45,6 @@ int randomMask() {
     
     return mask;
 }
-
 
 void initializePopulation() {
     /* creates initial population of
@@ -74,7 +63,7 @@ double fitness(Organism &o) {
        in other words, how good an organism is */
 
     double x = o.getEncodedNumber(A, B); 
-    return f(x) + CONST;
+    return f(x);
 }
 
 double totalFitness() {
@@ -85,6 +74,36 @@ double totalFitness() {
         total += fitness(o);
     }
     return total;
+}
+
+double cost(Organism &o) {
+    /* calculates 'how bad' an organism is 
+    calculated by formula: max(fitness[0], ... , fitness[n]) - fitness[i] */
+
+    double max_fitness = -1000;
+    for (Organism &it : POPULATION) {
+        if (fitness(it) > max_fitness)
+            max_fitness = fitness(it);
+    }
+
+    return max_fitness - fitness(o);
+}
+
+double totalCost() {
+    /* calculates total cost of the population */
+
+    double total = 0.0;
+    for (Organism &o : POPULATION) {
+        total += cost(o);
+    }
+    return total;
+}
+
+bool compare(Organism &o1, Organism &o2) {
+    /* function used to sort Organisms 
+    based on their fitness values */
+
+    return fitness(o1) < fitness(o2);
 }
 
 Organism selectParents() {
@@ -155,7 +174,7 @@ void mutate() {
 
 }
 
-void createNewPopulation() {
+ void createNewPopulation() {       // NOT NEEDED
     /* creates new generation by mating parents
      from current population */
 
@@ -185,24 +204,46 @@ void createNewPopulation() {
     return;
 }
 
+void mate() {
+    /* performs mating on remaining part of 
+    population after elimination process*/
+}
+
+void eliminate() {
+    /* eliminate M organisms from population 
+    using roulette wheel algorithm */
+
+    double total_cost = totalCost();
+
+    double r, sum = 0.0;
+    for (int i = 0; i < M; i++) {
+        r = static_cast<float>(rand()) / static_cast<float>(RAND_MAX / total_cost);
+
+        sum = 0;
+        for (auto it = POPULATION.begin(); it != POPULATION.end(); it++) {
+            sum += cost(*it);
+
+            // stop when random number is between cost of two organsims
+            if (sum > r) {
+                total_cost -= cost(*it);
+                POPULATION.erase(it);
+                break;
+            }
+        }
+    }
+
+    cout << "Eliminated " << M << " organisms\n";
+}
+
 
 int main() {
 
     initializePopulation(); 
 
     for (int i = 0; i < GENERATIONS; i++) {
-        cout << i + 1 << ". generation\n";
-        createNewPopulation();
-    } 
-
-    Organism best = POPULATION[0];
-    for (Organism &o : POPULATION) {
-        if (fitness(o) > fitness(best)) {
-            best = o;
-        }
+        eliminate();
+        mate();
     }
-
-    cout << "Found best solution: " << best.getEncodedNumber(A, B) << "\n";
 
     return 0;
 }
