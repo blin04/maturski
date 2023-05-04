@@ -5,7 +5,7 @@ using namespace std;
 
 // global parameters - maybe put into a separate file?
 const int POP_SIZE = 100;
-const int GENERATIONS = 20;
+const int GENERATIONS = 100;
 const double A = 0.0;       // interval start
 const double B = 100.0;     // interval end 
 double CONST = 0.0;         // constant used so that f(x) is not negative 
@@ -155,9 +155,9 @@ void mutate() {
 
 }
 
-void createNewPopulation() {
-    /* creates new generation by mating parents
-     from current population */
+void mate() {
+    /* performs mating on current population 
+    and pushes children to new population */
 
     Organism p1, p2;    // parents
     Organism ch1, ch2;  // children
@@ -173,15 +173,11 @@ void createNewPopulation() {
         ch1 = mateParents(p1, p2);
         ch2 = mateParents(p1, p2);
 
-        mutate();
-        mutate();
-
         NEW_POPULATION.push_back(ch1);
         NEW_POPULATION.push_back(ch2);
     }
 
     POPULATION = NEW_POPULATION;
-
     return;
 }
 
@@ -192,7 +188,8 @@ int main() {
 
     for (int i = 0; i < GENERATIONS; i++) {
         cout << i + 1 << ". generation\n";
-        createNewPopulation();
+        mate();
+        mutate();
     } 
 
     Organism best = POPULATION[0];
