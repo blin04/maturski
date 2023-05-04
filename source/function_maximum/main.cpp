@@ -4,14 +4,14 @@ using namespace std;
 
 
 // global parameters - maybe put into a separate file?
-const int POP_SIZE = 100;
-const int GENERATIONS = 20;
+const int POP_SIZE = 500;
+const int GENERATIONS = 100;
 const double A = 0.0;       // interval start
 const double B = 100.0;     // interval end 
 const int N = 32;           // length of chromosome
 const int M = 15;            // how many chromosomes are eliminated
 const int PM = 2;           // chance of mutation (in percentage)
-vector<Organism> POPULATION, NEW_POPULATION;
+vector<Organism> POPULATION;
 
 // target function, defined on [A, B]
 
@@ -116,7 +116,7 @@ Organism selectParents() {
 
     double sum = 0;
     Organism o;
-    for (int i = 0; i < POP_SIZE; i++) {
+    for (int i = 0; i < (int)POPULATION.size(); i++) {
         sum += fitness(POPULATION[i]);
 
         // stop when random number is between fitness of two organsims
@@ -174,39 +174,23 @@ void mutate() {
 
 }
 
- void createNewPopulation() {       // NOT NEEDED
-    /* creates new generation by mating parents
-     from current population */
-
-    Organism p1, p2;    // parents
-    Organism ch1, ch2;  // children
-    for(int i = 0; i < (POP_SIZE / 2); i++) {
-        // selecting two parents
-        p1 = selectParents();
-        do {
-            // assuring organism doesn't mate with itself
-            p2 = selectParents();
-        }
-        while(p2 == p1); 
-
-        ch1 = mateParents(p1, p2);
-        ch2 = mateParents(p1, p2);
-
-        mutate();
-        mutate();
-
-        NEW_POPULATION.push_back(ch1);
-        NEW_POPULATION.push_back(ch2);
-    }
-
-    POPULATION = NEW_POPULATION;
-
-    return;
-}
-
 void mate() {
     /* performs mating on remaining part of 
     population after elimination process*/
+
+    Organism p1, p2, ch;
+    for (int i = 0; i < M; i++) {
+        p1 = selectParents();
+        do {
+            p2 = selectParents();
+        }
+        while(p1 == p2);
+
+        // should check if ch is duplicate
+        ch = mateParents(p1, p2);
+        POPULATION.push_back(ch);
+    }
+
 }
 
 void eliminate() {
@@ -225,14 +209,13 @@ void eliminate() {
 
             // stop when random number is between cost of two organsims
             if (sum > r) {
+                // eliminate this organism from population
                 total_cost -= cost(*it);
                 POPULATION.erase(it);
                 break;
             }
         }
     }
-
-    cout << "Eliminated " << M << " organisms\n";
 }
 
 
@@ -241,9 +224,19 @@ int main() {
     initializePopulation(); 
 
     for (int i = 0; i < GENERATIONS; i++) {
+        cout << i + 1 << ". generation\n";
         eliminate();
         mate();
+        mutate();
     }
+
+    Organism best = POPULATION[0];
+    for (Organism &o : POPULATION) {
+        if (fitness(o) > fitness(best)) 
+            best = o;
+    }
+
+    cout << "Solution: x = " << best.getEncodedNumber(A, B) << ", F(X) = " << f(best.getEncodedNumber(A, B)) << "\n";
 
     return 0;
 }
