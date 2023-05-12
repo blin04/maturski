@@ -4,7 +4,7 @@ using namespace std;
 
 
 // global parameters - maybe put into a separate file?
-const int POP_SIZE = 500;
+const int POP_SIZE = 100;
 const int GENERATIONS = 100;
 const double A = 0.0;       // interval start
 const double B = 100.0;     // interval end 
@@ -220,6 +220,8 @@ void eliminate() {
 
 
 int main() {
+
+    srand(time(NULL));
 
     initializePopulation(); 
 
