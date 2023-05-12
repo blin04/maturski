@@ -184,6 +184,8 @@ void mate() {
 
 int main() {
 
+    srand(time(NULL));
+
     initializePopulation(); 
 
     for (int i = 0; i < GENERATIONS; i++) {
