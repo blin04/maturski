@@ -158,6 +158,8 @@ void mutate() {
 void mate() {
     /* performs mating on current population 
     and pushes children to new population */
+    
+    NEW_POPULATION.clear();
 
     Organism p1, p2;    // parents
     Organism ch1, ch2;  // children

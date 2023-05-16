@@ -3,10 +3,12 @@ using namespace std;
 
 /* global variables */
 const int GENERATIONS = 100;             
-const int POP_SIZE = 100;                   // population size
-const string GOAL = "Zeumnska gimnazija";   // goal string
+const int POP_SIZE = 1000;                   // population size
+const string GOAL = "ZeumnskaGimnazija";   // goal string
 const int LEN = (int)GOAL.size();           // length of goal string
-vector<string> POPULATION(POP_SIZE);
+const int PM = 3;
+const double PE = 0.2;
+vector<string> POPULATION, NEW_POPULATION;
 
 /* utility functions */
 string getRandomString() {
@@ -33,11 +35,36 @@ int fitness(string Organism) {
     return err;
 }
 
+int totalFitness() {
+    /* calculates total fitness of the population */
+
+    int total = 0;
+    for (string &o : POPULATION) {
+        total += fitness(o);
+    }
+    return total;
+}
+
 string selectParent() {
     /* selects parent using 
     roulette wheen algorithm */
 
-    return POPULATION[0];
+    // TODO: preraditi, preko normalne raspodele mozda
+
+    double r = static_cast<double>(rand() / static_cast<double>(RAND_MAX / totalFitness()));
+
+    double sum = 0;
+    string chosen;
+    for (int i = 0; i < POP_SIZE; i++) {
+        sum += fitness(POPULATION[i]);
+
+        // stop when random number is between 
+        if (sum > r) {
+            chosen = POPULATION[i];
+            break;
+        }    
+    }
+    return chosen;
 }
 
 string mateParents(string p1, string p2) {
@@ -50,12 +77,28 @@ string mateParents(string p1, string p2) {
     return ch;
 }
 
-void mutate() {}
+void mutate() {
+    /* mutates strings */
+
+    for (int i = 0; i < POP_SIZE; i++) {
+        if ((rand()) % 100 < PM) {
+            int rand_ind = (rand()) % LEN;
+            char rand_char = (char)((rand() % 94) + 32);
+
+            POPULATION[i][rand_ind] = rand_char;
+        }
+    }
+}
 
 void mate() {
     /* constructs new generation */
+    NEW_POPULATION.clear();
 
-    for (int i = 0; i < (POP_SIZE / 2); i++) {
+    /* elitism */
+  /*  int elite_size = static_cast<int>(PE * static_cast<double>(POP_SIZE));
+    if (elite_size % 2) ++elite_size; */
+
+    while((int)NEW_POPULATION.size() != POP_SIZE) {
        string p1 = selectParent();
        string p2;
        do {
@@ -67,24 +110,47 @@ void mate() {
         string ch2 = mateParents(p1, p2);
 
         // add offspring to population
+        NEW_POPULATION.push_back(ch1);
+        NEW_POPULATION.push_back(ch2);
     }
+
+    POPULATION = NEW_POPULATION;
 }
 
 void initializePopulation() {
     /* initializes random population */
     for (int i = 0; i < POP_SIZE; i++) {
-        POPULATION[i] = getRandomString();
+        POPULATION.push_back(getRandomString());
     }
 }
 
 int main() {
+    srand(time(NULL));
 
     initializePopulation();
 
     for (int i = 0; i < GENERATIONS; i++) {
+        cout << i + 1 << ". generation\n";
         mate();
         mutate();
+
+        /**/
+        int best = INT_MAX;
+        for (int i = 0; i < POP_SIZE; i++) {
+            if (fitness(POPULATION[i]) < best) best = fitness(POPULATION[i]); 
+        }
+        cout << "F: " << best << "\n";
     }  
+
+    pair<int, string> ans = {INT_MAX, ""};
+    for (int i = 0; i < POP_SIZE; i++) {
+        if (ans.first > fitness(POPULATION[i])) {
+           ans.first = fitness(POPULATION[i]); 
+           ans.second = POPULATION[i];
+        }
+    }
+
+    cout << "Best solution: " << ans.second << " with fitness " << ans.first << "\n";
     
     return 0;
 }
