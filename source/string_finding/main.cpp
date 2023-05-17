@@ -2,10 +2,10 @@
 using namespace std;
 
 /* global variables */
-const int GENERATIONS = 100;             
-const int POP_SIZE = 1000;                   // population size
-const string GOAL = "ZeumnskaGimnazija";   // goal string
-const int LEN = (int)GOAL.size();           // length of goal string
+const int GENERATIONS = 150;             
+const int POP_SIZE = 1000;              // population size
+string GOAL = "Programiranje";          // goal string
+int LEN = (int)GOAL.size();             // length of goal string
 const int PM = 3;
 const double PE = 0.2;
 vector<string> POPULATION, NEW_POPULATION;
@@ -71,7 +71,9 @@ string mateParents(string p1, string p2) {
     /* */
     string ch;
     for (int i = 0; i < LEN; i++) {
-        if ((rand() % 10) < 5) ch += p1[i];
+        if (abs(p1[i] - GOAL[i]) <= abs(p2[i] - GOAL[i])) {
+            ch += p1[i];
+        }
         else ch += p2[i];
     }
     return ch;
@@ -127,20 +129,21 @@ void initializePopulation() {
 int main() {
     srand(time(NULL));
 
-    initializePopulation();
+    cout << "Unesite string: ";
+    cin >> GOAL;
+    LEN = (int)GOAL.size();
 
+    int start = time(NULL);
+
+    initializePopulation();
     for (int i = 0; i < GENERATIONS; i++) {
-        cout << i + 1 << ". generation\n";
+//        cout << i + 1 << ". generation\n";
         mate();
         mutate();
-
-        /**/
-        int best = INT_MAX;
-        for (int i = 0; i < POP_SIZE; i++) {
-            if (fitness(POPULATION[i]) < best) best = fitness(POPULATION[i]); 
-        }
-        cout << "F: " << best << "\n";
     }  
+
+    int end = time(NULL);
+
 
     pair<int, string> ans = {INT_MAX, ""};
     for (int i = 0; i < POP_SIZE; i++) {
@@ -149,8 +152,8 @@ int main() {
            ans.second = POPULATION[i];
         }
     }
-
-    cout << "Best solution: " << ans.second << " with fitness " << ans.first << "\n";
     
+    cout << "Pronadjen je string: " << ans.second << "\n";
+    cout << "Vreme izvrsavanja algoritma je: " << end - start << "s\n";
     return 0;
 }
