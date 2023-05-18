@@ -1,4 +1,8 @@
-#include<bits/stdc++.h>
+#include<iostream>
+#include<vector>
+#include<random>
+#include<time.h>
+#include<climits>
 #include "organism.h"
 using namespace std;
 
@@ -6,8 +10,8 @@ using namespace std;
 // global parameters - maybe put into a separate file?
 const int POP_SIZE = 100;
 const int GENERATIONS = 100;
-const double A = 0.0;       // interval start
-const double B = 100.0;     // interval end 
+const double A = -2.0;       // interval start
+const double B = 2.0;     // interval end 
 const int N = 32;           // length of chromosome
 const int M = 15;            // how many chromosomes are eliminated
 const int PM = 2;           // chance of mutation (in percentage)
@@ -16,7 +20,7 @@ vector<Organism> POPULATION;
 // target function, defined on [A, B]
 
 double f(double x) {
-    return (pow(x, sin(x)));
+    return pow(x, 5) - 5 * pow(x, 3) - (1 / 3) * (x * x) + 4 * x + 1;
 }
 
 // fucntions
@@ -46,24 +50,19 @@ int randomMask() {
     return mask;
 }
 
-void initializePopulation() {
-    /* creates initial population of
-     random organisms with size of POP_SIZE */
-
-    for (int i = 0; i < POP_SIZE; i++) {
-        Organism o;
-        o.DNA = createRandomDNA();
-
-        POPULATION.push_back(o);
-    }
-}
-
 double fitness(Organism &o) {
     /* calculates fitness function of an organism 
        in other words, how good an organism is */
 
     double x = o.getEncodedNumber(A, B); 
     return f(x);
+}
+
+bool compare(Organism &o1, Organism &o2) {
+    /* function used to sort Organisms 
+    based on their fitness values */
+
+    return fitness(o1) < fitness(o2);
 }
 
 double totalFitness() {
@@ -99,12 +98,18 @@ double totalCost() {
     return total;
 }
 
-bool compare(Organism &o1, Organism &o2) {
-    /* function used to sort Organisms 
-    based on their fitness values */
+void initializePopulation() {
+    /* creates initial population of
+     random organisms with size of POP_SIZE */
 
-    return fitness(o1) < fitness(o2);
+    for (int i = 0; i < POP_SIZE; i++) {
+        Organism o;
+        o.DNA = createRandomDNA();
+
+        POPULATION.push_back(o);
+    }
 }
+
 
 Organism selectParents() {
     /* selects a parent from current population
@@ -179,7 +184,7 @@ void mate() {
     population after elimination process*/
 
     Organism p1, p2, ch;
-    for (int i = 0; i < M; i++) {
+    while(POPULATION.size() != POP_SIZE) {
         p1 = selectParents();
         do {
             p2 = selectParents();
@@ -225,6 +230,8 @@ int main() {
 
     initializePopulation(); 
 
+    int start = time(NULL);
+
     for (int i = 0; i < GENERATIONS; i++) {
         cout << i + 1 << ". generation\n";
         eliminate();
@@ -232,13 +239,16 @@ int main() {
         mutate();
     }
 
+    int end = time(NULL);
+
     Organism best = POPULATION[0];
     for (Organism &o : POPULATION) {
         if (fitness(o) > fitness(best)) 
             best = o;
     }
 
-    cout << "Solution: x = " << best.getEncodedNumber(A, B) << ", F(X) = " << f(best.getEncodedNumber(A, B)) << "\n";
+    cout << "Maksiumum f-je je u tacki X = " << best.getEncodedNumber(A, B) << "\n";
+    cout << "Vreme izvrsavanja: " << end - start << "s\n";
 
     return 0;
 }
