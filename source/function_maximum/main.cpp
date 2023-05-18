@@ -1,13 +1,18 @@
-#include<bits/stdc++.h>
+#include<iostream>
+#include<vector>
+#include<random>
+#include<climits>
+#include<time.h>
+#include<stdlib.h>
 #include "organism.h"
 using namespace std;
 
 
 // global parameters - maybe put into a separate file?
-const int POP_SIZE = 100;
+const int POP_SIZE = 200;
 const int GENERATIONS = 100;
-const double A = 0.0;       // interval start
-const double B = 100.0;     // interval end 
+const double A = -2.0;       // interval start
+const double B = 2.0;     // interval end 
 double CONST = 0.0;         // constant used so that f(x) is not negative 
 const int N = 32;           // length of chromosome
 const int PM = 2;           // chance of mutation (in percentage)
@@ -16,7 +21,7 @@ vector<Organism> POPULATION, NEW_POPULATION;
 // target function, defined on [A, B]
 
 double f(double x) {
-    return (pow(x, sin(x)));
+    return pow(x, 5) - 5 * pow(x, 3) - (1/3) * (x * x) + 4 * x + 1;
 }
 
 // fucntions
@@ -190,11 +195,15 @@ int main() {
 
     initializePopulation(); 
 
+    int start = time(NULL);
+
     for (int i = 0; i < GENERATIONS; i++) {
-        cout << i + 1 << ". generation\n";
+       // cout << i + 1 << ". generation\n";
         mate();
         mutate();
     } 
+
+    int end = time(NULL);
 
     Organism best = POPULATION[0];
     for (Organism &o : POPULATION) {
@@ -203,7 +212,8 @@ int main() {
         }
     }
 
-    cout << "Found best solution: " << best.getEncodedNumber(A, B) << "\n";
+    cout << "Funkcija dostize maksimum u tacki X = " << best.getEncodedNumber(A, B) << "\n";
+    cout << "Vreme izvrsavanja: " << end - start << "s\n";
 
     return 0;
 }
