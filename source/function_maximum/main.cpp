@@ -10,7 +10,7 @@ using namespace std;
 
 // global parameters - maybe put into a separate file?
 const int POP_SIZE = 200;
-const int GENERATIONS = 100;
+const int GENERATIONS = 200;
 const double A = -2.0;       // interval start
 const double B = 2.0;     // interval end 
 double CONST = 0.0;         // constant used so that f(x) is not negative 
@@ -150,11 +150,10 @@ void mutate() {
         // organism has probability of PM/100 to be chosen
 
         if ((rand() % 100) < PM) {
-            // mutation is performed as follows:
-            //  * mask[i] == 1  ->  this bit stays as it was
-            //  * mask[i] == 0  ->  this bit changes
+            // randomly change bit
 
-            POPULATION[i].DNA ^= randomMask();
+            int rand_pos = rand() % N;
+            POPULATION[i].DNA ^= (1 << rand_pos);
         }
     }
 
@@ -188,6 +187,11 @@ void mate() {
     return;
 }
 
+void write() {
+    // writes current population into a file
+    return;
+}
+
 
 int main() {
 
@@ -201,6 +205,8 @@ int main() {
        // cout << i + 1 << ". generation\n";
         mate();
         mutate();
+
+        if (i == 0 || (i + 1) % 20 == 0) write();
     } 
 
     int end = time(NULL);
