@@ -1,5 +1,10 @@
 /literature
-/text
+
+text/*
+!text/rad.pdf
+!text/rad.tex
+
 /source/function_maximum/.vscode/
 /source/function_maximum/bin
+/source/function_maximum/results
 /source/string_finding/bin

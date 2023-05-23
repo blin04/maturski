@@ -2,6 +2,7 @@
 #include<vector>
 #include<random>
 #include<climits>
+#include<fstream>
 #include<time.h>
 #include<stdlib.h>
 #include "organism.h"
@@ -9,8 +10,8 @@ using namespace std;
 
 
 // global parameters - maybe put into a separate file?
-const int POP_SIZE = 200;
-const int GENERATIONS = 200;
+const int POP_SIZE = 20;
+const int GENERATIONS = 100;
 const double A = -2.0;       // interval start
 const double B = 2.0;     // interval end 
 double CONST = 0.0;         // constant used so that f(x) is not negative 
@@ -187,8 +188,26 @@ void mate() {
     return;
 }
 
-void write() {
+void write(int gen) {
     // writes current population into a file
+    cout << "CALLED: " << gen << "\n";
+
+    string file_name = "results/gen";
+
+    if (gen == 100) file_name += "100";
+    else {
+        file_name += ('0' + (gen / 10));
+        file_name += ('0' + (gen % 10)); 
+    }
+    cout << "FILE NAME:" << file_name << "\n";
+
+    ofstream file(file_name);
+
+    for (Organism &o : POPULATION) {
+        file << o.getEncodedNumber(A, B) << " " << f(o.getEncodedNumber(A, B)) << "\n";
+    }
+    file.close();
+
     return;
 }
 
@@ -201,12 +220,14 @@ int main() {
 
     int start = time(NULL);
 
+	write(0);
+
     for (int i = 0; i < GENERATIONS; i++) {
        // cout << i + 1 << ". generation\n";
         mate();
         mutate();
 
-        if (i == 0 || (i + 1) % 20 == 0) write();
+        if (i < 10 || (i == 29) || (i == 59)) write(i + 1);
     } 
 
     int end = time(NULL);
@@ -218,7 +239,8 @@ int main() {
         }
     }
 
-    cout << "Funkcija dostize maksimum u tacki X = " << best.getEncodedNumber(A, B) << "\n";
+    cout << "Funkcija dostize maksimum u tacki X = " << best.getEncodedNumber(A, B) << " ";
+	cout << ", F(X) = " << f(best.getEncodedNumber(A, B)) << "\n";
     cout << "Vreme izvrsavanja: " << end - start << "s\n";
 
     return 0;
