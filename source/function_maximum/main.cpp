@@ -169,11 +169,9 @@ void mutate() {
         // organism has probability of PM/100 to be chosen
 
         if ((rand() % 100) < PM) {
-            // mutation is performed as follows:
-            //  * mask[i] == 1  ->  this bit stays as it was
-            //  * mask[i] == 0  ->  this bit changes
+            int rand_pos = rand() % N;
 
-            POPULATION[i].DNA ^= randomMask();
+            POPULATION[i].DNA ^= (1 << rand_pos);
         }
     }
 
