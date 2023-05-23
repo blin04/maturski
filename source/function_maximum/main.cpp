@@ -22,7 +22,7 @@ vector<Organism> POPULATION, NEW_POPULATION;
 // target function, defined on [A, B]
 
 double f(double x) {
-    return pow(x, 5) - 5 * pow(x, 3) - (1/3) * (x * x) + 4 * x + 1;
+    return pow(x, 5) - 5 * pow(x, 3) - (x * x) / 3 + 4 * x + 1;
 }
 
 // fucntions
@@ -227,7 +227,7 @@ int main() {
         mate();
         mutate();
 
-        if (i < 10 || (i == 29) || (i == 59)) write(i + 1);
+        if (i < 10 || (i == 99) || (i == 59)) write(i + 1);
     } 
 
     int end = time(NULL);
