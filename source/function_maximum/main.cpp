@@ -9,10 +9,10 @@ using namespace std;
 
 
 // global parameters - maybe put into a separate file?
-const int POP_SIZE = 100;
-const int GENERATIONS = 100;
+const int POP_SIZE = 200;
+const int GENERATIONS = 150;
 double A = -2.0;            // interval start
-double B = 2.0;             // interval end 
+double B = 6.0;             // interval end 
 const int N = 32;           // length of chromosome
 const int M = 15;           // how many chromosomes are eliminated
 const int PM = 2;           // chance of mutation (in percentage)
@@ -235,17 +235,19 @@ int main() {
     srand(time(NULL));
 
     // general input
-    int fun; cout << "Izaberi funkciju (1-4): ";
+  /*  int fun; cout << "Izaberi funkciju (1-4): ";
     cin >> fun;
     cout << "Odredi interval [A - B]: \n";
     cout << "A: "; cin >> A;
-    cout << "B: "; cin >> B;
+    cout << "B: "; cin >> B; */
+
+    f = f3;
 
     int start = time(NULL);
 
     initializePopulation(); 
     for (int i = 0; i < GENERATIONS; i++) {
-        cout << i + 1 << ". generation\n";
+        // cout << i + 1 << ". generation\n";
         eliminate();
         mate();
         mutate();
@@ -260,8 +262,12 @@ int main() {
     }
 
     // general output
-    cout << "Maksiumum f-je je u tacki X = " << best.getEncodedNumber(A, B) << "\n";
-    cout << "Vreme izvrsavanja: " << end - start << "s\n";
+    // cout << "Maksiumum f-je je u tacki X = " << best.getEncodedNumber(A, B) << "\n";
+    // cout << "Vreme izvrsavanja: " << end - start << "s\n";
+
+    // testing output
+    cout << best.getEncodedNumber(A, B) << " ";
+    cout << end - start << "\n";
 
     return 0;
 }
