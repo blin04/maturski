@@ -11,8 +11,8 @@ using namespace std;
 
 const int POP_SIZE = 200;
 const int GENERATIONS = 150;
-double A = -2.0;            // interval start
-double B = 2.0;             // interval end 
+double A = -40.0;            // interval start
+double B = 40.0;             // interval end 
 double CONST = 0.0;         // constant used so that f(x) is not negative 
 const int N = 32;           // length of chromosome
 const int PM = 2;           // chance of mutation (in percentage)
@@ -34,7 +34,7 @@ double f3(double x) {
 }
 
 double f4(double x) {
-    return (sin(10 * M_PI * x*x) / x);
+    return (sin(10 * M_PI * x*x)) / x;
 }
 
 
@@ -185,11 +185,7 @@ void mate() {
     for(int i = 0; i < (POP_SIZE / 2); i++) {
         // selecting two parents
         p1 = selectParents();
-        do {
-            // assuring organism doesn't mate with itself
-            p2 = selectParents();
-        }
-        while(p2 == p1); 
+        p2 = selectParents();
 
         ch1 = mateParents(p1, p2);
         ch2 = mateParents(p1, p2);
@@ -229,6 +225,7 @@ int main() {
     srand(time(NULL));
 
     // general input
+	/*
     int fun; cout << "Izaberi funkciju (1-4): ";
     cin >> fun;
     cout << "Odredi interval [A - B]: \n";
@@ -253,7 +250,9 @@ int main() {
         default:
             throw runtime_error("Pogresan izbor funckije");
             break;
-    }
+    } */
+
+	f = f4;
 
     int start = time(NULL);
 
@@ -276,13 +275,14 @@ int main() {
         }
     }
 
-    // general output
-     cout << "Funkcija dostize maksimum u tacki X = " << best.getEncodedNumber(A, B) << " ";
-     cout << ", F(X) = " << f(best.getEncodedNumber(A, B)) << "\n";
-     cout << "Vreme izvrsavanja: " << end - start << "s\n";
+	// general output
+     //cout << "Funkcija dostize maksimum u tacki X = " << best.getEncodedNumber(A, B) << " ";
+     //cout << ", F(X) = " << f(best.getEncodedNumber(A, B)) << "\n";
+     //cout << "Vreme izvrsavanja: " << end - start << "s\n";
 
     // output for getting results
-    // cout << best.getEncodedNumber(A, B) << "\n";
+    cout << best.getEncodedNumber(A, B) << "\n";
+    //cout << end - start << "\n";
 
     return 0;
 }
