@@ -9,23 +9,36 @@
 using namespace std;
 
 
-// global parameters - maybe put into a separate file?
-const int POP_SIZE = 20;
-const int GENERATIONS = 100;
-const double A = -2.0;       // interval start
-const double B = 2.0;     // interval end 
+const int POP_SIZE = 200;
+const int GENERATIONS = 150;
+double A = -2.0;            // interval start
+double B = 2.0;             // interval end 
 double CONST = 0.0;         // constant used so that f(x) is not negative 
 const int N = 32;           // length of chromosome
 const int PM = 2;           // chance of mutation (in percentage)
+double (*f)(double);        // pointer to used function
 vector<Organism> POPULATION, NEW_POPULATION;
 
-// target function, defined on [A, B]
+/* test functions */
 
-double f(double x) {
+double f1(double x) {
     return pow(x, 5) - 5 * pow(x, 3) - (x * x) / 3 + 4 * x + 1;
 }
 
-// fucntions
+double f2(double x) {
+    return pow(x, sin(x));
+}
+
+double f3(double x) {
+    return x * cos(tan(x));
+}
+
+double f4(double x) {
+    return (sin(10 * M_PI * x*x) / x);
+}
+
+
+/* utility functions */
 
 int createRandomDNA() {
     /* returns random DNA, used for initializing population */
@@ -62,6 +75,7 @@ int randomMask() {
     return mask;
 }
 
+/* main functions */
 
 void initializePopulation() {
     /* creates initial population of
@@ -189,8 +203,7 @@ void mate() {
 }
 
 void write(int gen) {
-    // writes current population into a file
-    cout << "CALLED: " << gen << "\n";
+    /* writes current population into a file */
 
     string file_name = "results/gen";
 
@@ -199,7 +212,6 @@ void write(int gen) {
         file_name += ('0' + (gen / 10));
         file_name += ('0' + (gen % 10)); 
     }
-    cout << "FILE NAME:" << file_name << "\n";
 
     ofstream file(file_name);
 
@@ -216,18 +228,43 @@ int main() {
 
     srand(time(NULL));
 
-    initializePopulation(); 
+    // general input
+    int fun; cout << "Izaberi funkciju (1-4): ";
+    cin >> fun;
+    cout << "Odredi interval [A - B]: \n";
+    cout << "A: "; cin >> A;
+    cout << "B: "; cin >> B;
+
+    switch (fun)
+    {
+        case 1:
+            f = f1; 
+            break;
+        case 2:
+            f = f2; 
+            break;
+        case 3:
+            f = f3; 
+            break;
+        case 4:
+            f = f4; 
+            break;
+        
+        default:
+            throw runtime_error("Pogresan izbor funckije");
+            break;
+    }
 
     int start = time(NULL);
 
-	write(0);
-
+    initializePopulation(); 
+	//write(0);
     for (int i = 0; i < GENERATIONS; i++) {
-       // cout << i + 1 << ". generation\n";
+        // cout << i + 1 << ". generation\n";
         mate();
         mutate();
 
-        if (i < 10 || (i == 99) || (i == 59)) write(i + 1);
+        //if (i < 10 || (i == 99) || (i == 59)) write(i + 1);
     } 
 
     int end = time(NULL);
@@ -239,9 +276,13 @@ int main() {
         }
     }
 
-    cout << "Funkcija dostize maksimum u tacki X = " << best.getEncodedNumber(A, B) << " ";
-	cout << ", F(X) = " << f(best.getEncodedNumber(A, B)) << "\n";
-    cout << "Vreme izvrsavanja: " << end - start << "s\n";
+    // general output
+     cout << "Funkcija dostize maksimum u tacki X = " << best.getEncodedNumber(A, B) << " ";
+     cout << ", F(X) = " << f(best.getEncodedNumber(A, B)) << "\n";
+     cout << "Vreme izvrsavanja: " << end - start << "s\n";
+
+    // output for getting results
+    // cout << best.getEncodedNumber(A, B) << "\n";
 
     return 0;
 }
