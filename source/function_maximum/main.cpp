@@ -9,7 +9,7 @@
 using namespace std;
 
 
-const int POP_SIZE = 150;
+const int POP_SIZE = 200;
 const int GENERATIONS = 150;
 double A = 0.0;            // interval start
 double B = 100.0;             // interval end 
@@ -257,13 +257,13 @@ int main() {
     int start = time(NULL);
 
     initializePopulation(); 
-	write(0);
+	//write(0);
     for (int i = 0; i < GENERATIONS; i++) {
         //cout << i + 1 << ". generation\n";
         mate();
         mutate();
 
-        if (i < 10 || (i == 99) || (i == 59)) write(i + 1);
+		//if (i < 10 || (i == 99) || (i == 59)) write(i + 1);
     } 
 
     int end = time(NULL);
