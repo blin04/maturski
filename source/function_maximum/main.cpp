@@ -1,8 +1,9 @@
 #include<iostream>
 #include<vector>
 #include<random>
-#include<time.h>
+#include<fstream>
 #include<climits>
+#include<time.h>
 #include "organism.h"
 using namespace std;
 
@@ -10,20 +11,33 @@ using namespace std;
 // global parameters - maybe put into a separate file?
 const int POP_SIZE = 100;
 const int GENERATIONS = 100;
-const double A = -2.0;       // interval start
-const double B = 2.0;     // interval end 
+double A = -2.0;            // interval start
+double B = 2.0;             // interval end 
 const int N = 32;           // length of chromosome
-const int M = 15;            // how many chromosomes are eliminated
+const int M = 15;           // how many chromosomes are eliminated
 const int PM = 2;           // chance of mutation (in percentage)
+double (*f)(double x);      // pointer to used function
 vector<Organism> POPULATION;
 
-// target function, defined on [A, B]
+/* test functions */
 
-double f(double x) {
-    return pow(x, 5) - 5 * pow(x, 3) - (1 / 3) * (x * x) + 4 * x + 1;
+double f1(double x) {
+    return pow(x, 5) - 5 * pow(x, 3) - (x * x) / 3 + 4 * x + 1;
 }
 
-// fucntions
+double f2(double x) {
+    return pow(x, sin(x));
+}
+
+double f3(double x) {
+    return x * cos(tan(x));
+}
+
+double f4(double x) {
+    return (sin(10 * M_PI * x*x) / x);
+}
+
+/* utility functions */
 
 int createRandomDNA() {
     /* returns random DNA, used for initializing population */
@@ -58,13 +72,6 @@ double fitness(Organism &o) {
     return f(x);
 }
 
-bool compare(Organism &o1, Organism &o2) {
-    /* function used to sort Organisms 
-    based on their fitness values */
-
-    return fitness(o1) < fitness(o2);
-}
-
 double totalFitness() {
     /* calculates total fitness of the population */
 
@@ -97,6 +104,8 @@ double totalCost() {
     }
     return total;
 }
+
+/* main functions */
 
 void initializePopulation() {
     /* creates initial population of
@@ -221,15 +230,20 @@ void eliminate() {
     }
 }
 
-
 int main() {
 
     srand(time(NULL));
 
-    initializePopulation(); 
+    // general input
+    int fun; cout << "Izaberi funkciju (1-4): ";
+    cin >> fun;
+    cout << "Odredi interval [A - B]: \n";
+    cout << "A: "; cin >> A;
+    cout << "B: "; cin >> B;
 
     int start = time(NULL);
 
+    initializePopulation(); 
     for (int i = 0; i < GENERATIONS; i++) {
         cout << i + 1 << ". generation\n";
         eliminate();
@@ -245,6 +259,7 @@ int main() {
             best = o;
     }
 
+    // general output
     cout << "Maksiumum f-je je u tacki X = " << best.getEncodedNumber(A, B) << "\n";
     cout << "Vreme izvrsavanja: " << end - start << "s\n";
 
