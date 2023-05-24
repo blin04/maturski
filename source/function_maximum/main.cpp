@@ -9,10 +9,10 @@
 using namespace std;
 
 
-const int POP_SIZE = 200;
+const int POP_SIZE = 150;
 const int GENERATIONS = 150;
-double A = -40.0;            // interval start
-double B = 40.0;             // interval end 
+double A = 0.0;            // interval start
+double B = 100.0;             // interval end 
 double CONST = 0.0;         // constant used so that f(x) is not negative 
 const int N = 32;           // length of chromosome
 const int PM = 2;           // chance of mutation (in percentage)
@@ -252,18 +252,18 @@ int main() {
             break;
     } */
 
-	f = f4;
+	f = f2;
 
     int start = time(NULL);
 
     initializePopulation(); 
-	//write(0);
+	write(0);
     for (int i = 0; i < GENERATIONS; i++) {
-        // cout << i + 1 << ". generation\n";
+        //cout << i + 1 << ". generation\n";
         mate();
         mutate();
 
-        //if (i < 10 || (i == 99) || (i == 59)) write(i + 1);
+        if (i < 10 || (i == 99) || (i == 59)) write(i + 1);
     } 
 
     int end = time(NULL);
@@ -276,13 +276,13 @@ int main() {
     }
 
 	// general output
-     //cout << "Funkcija dostize maksimum u tacki X = " << best.getEncodedNumber(A, B) << " ";
-     //cout << ", F(X) = " << f(best.getEncodedNumber(A, B)) << "\n";
-     //cout << "Vreme izvrsavanja: " << end - start << "s\n";
+    //cout << "Funkcija dostize maksimum u tacki X = " << best.getEncodedNumber(A, B) << " ";
+    //cout << ", F(X) = " << f(best.getEncodedNumber(A, B)) << "\n";
+    //cout << "Vreme izvrsavanja: " << end - start << "s\n";
 
     // output for getting results
-    cout << best.getEncodedNumber(A, B) << "\n";
-    //cout << end - start << "\n";
+    cout << best.getEncodedNumber(A, B) << " ";
+    cout << end - start << "\n";
 
     return 0;
 }
