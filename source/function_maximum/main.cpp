@@ -8,11 +8,10 @@
 using namespace std;
 
 
-// global parameters - maybe put into a separate file?
 const int POP_SIZE = 200;
 const int GENERATIONS = 150;
 double A = -2.0;            // interval start
-double B = 6.0;             // interval end 
+double B = 2.0;             // interval end 
 const int N = 32;           // length of chromosome
 const int M = 15;           // how many chromosomes are eliminated
 const int PM = 2;           // chance of mutation (in percentage)
@@ -67,10 +66,7 @@ int randomMask() {
 double fitness(Organism &o) {
     /* calculates fitness function of an organism 
        in other words, how good an organism is */
-
-    double x = o.getEncodedNumber(A, B); 
-    return f(x);
-}
+double x = o.getEncodedNumber(A, B); return f(x); }
 
 double totalFitness() {
     /* calculates total fitness of the population */
@@ -191,12 +187,15 @@ void mate() {
     population after elimination process*/
 
     Organism p1, p2, ch;
+	int i;
     while(POPULATION.size() != POP_SIZE) {
+		i = 0;
         p1 = selectParents();
         do {
+			i++;
             p2 = selectParents();
         }
-        while(p1 == p2);
+        while(p1 == p2 && i < 10);
 
         // should check if ch is duplicate
         ch = mateParents(p1, p2);
@@ -241,13 +240,13 @@ int main() {
     cout << "A: "; cin >> A;
     cout << "B: "; cin >> B; */
 
-    f = f3;
+    f = f1;
 
     int start = time(NULL);
 
     initializePopulation(); 
     for (int i = 0; i < GENERATIONS; i++) {
-        // cout << i + 1 << ". generation\n";
+        //cout << i + 1 << ". generation\n";
         eliminate();
         mate();
         mutate();
@@ -264,8 +263,7 @@ int main() {
     // general output
     // cout << "Maksiumum f-je je u tacki X = " << best.getEncodedNumber(A, B) << "\n";
     // cout << "Vreme izvrsavanja: " << end - start << "s\n";
-
-    // testing output
+	// testing output
     cout << best.getEncodedNumber(A, B) << " ";
     cout << end - start << "\n";
 
