@@ -2,7 +2,7 @@
 using namespace std;
 
 /* global variables */
-const int GENERATIONS = 150;             
+const int GENERATIONS = 200;             
 const int POP_SIZE = 1000;              // population size
 string GOAL = "Programiranje";          // goal string
 int LEN = (int)GOAL.size();             // length of goal string
@@ -47,9 +47,7 @@ int totalFitness() {
 
 string selectParent() {
     /* selects parent using 
-    roulette wheen algorithm */
-
-    // TODO: preraditi, preko normalne raspodele mozda
+    roulette wheel algorithm */
 
     double r = static_cast<double>(rand() / static_cast<double>(RAND_MAX / totalFitness()));
 
@@ -139,6 +137,16 @@ int main() {
     for (int i = 0; i < GENERATIONS; i++) {
 //        cout << i + 1 << ". generation\n";
         mate();
+
+        if (i < 5 || i > 197) {
+            string best = POPULATION[0];
+            for (auto s : POPULATION) {
+                if (fitness(best) > fitness(s))
+                    best = s;
+            }
+            cout << best << "\n";
+        }
+
         mutate();
     }  
 
